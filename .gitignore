@@ -1,0 +1,88 @@
+# Created by https://www.toptal.com/developers/itinore/api/cocoscreator,visualstudiocode
+# Edit at https://www.toptal.com/developers/itinore?templates=cocoscreator,visualstudiocode
+
+### CocosCreator ###
+#/////////////////////////////////////////////////////////////////////////////
+# Cocos Creator Projects
+
+build/
+library/
+temp/
+local/
+jsb-default/
+jsb-binary/
+jsb-link/
+web-desktop/
+web-mobile/
+runtime/
+jsb/
+export/
+
+# Los and databases
+
+*.lo
+*.sql
+*.sqlite
+
+# files for debuer
+
+*.sln
+*.csproj
+*.pidb
+*.unityproj
+*.suo
+
+# OS enerated files
+
+.DS_Store
+ehthumbs.db
+Thumbs.db
+
+# exvim files
+
+*UnityVS.meta
+*.err
+*.err.meta
+*.exvim
+*.exvim.meta
+*.vimentry
+*.vimentry.meta
+*.vimproject
+*.vimproject.meta
+.vimfiles.*/
+.exvim.*/
+quick_en_project_*_autoen.bat
+quick_en_project_*_autoen.bat.meta
+quick_en_project_*_autoen.sh
+quick_en_project_*_autoen.sh.meta
+.exvim.app
+
+# webstorm files
+
+.idea/
+
+# VSCode files
+
+creator.d.ts
+.vscode/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settins.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+### VisualStudioCode Patch ###
+# Inore all local history of files
+.history
+.ionide
+
+# End of https://www.toptal.com/developers/itinore/api/cocoscreator,visualstudiocode
