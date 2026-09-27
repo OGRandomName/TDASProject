@@ -16,7 +16,7 @@ export interface WeaponConfig {
     name: string,
     fireMode: FireMode,
     fireRate: number,
-    bullletSpeed: number,
+    bulletSpeed: number,
     damageAmount: number,
     magazineSize: number,
     burstCount?: number,
@@ -28,7 +28,7 @@ export const PISTOL: WeaponConfig = {
     name: "Pistol",
     fireMode: FireMode.SEMI_AUTO,
     fireRate: 0.1,
-    bullletSpeed: 25,
+    bulletSpeed: 25,
     damageAmount: 10,
     magazineSize: 10,
     barrels: [
