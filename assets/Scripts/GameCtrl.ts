@@ -1,4 +1,4 @@
-import { _decorator, Camera, Component, EventKeyboard, EventMouse, Node, Prefab } from 'cc';
+import { _decorator, Camera, Component, EventKeyboard, EventMouse, Input, input, Node, Prefab } from 'cc';
 import { Player } from './Player';
 const { ccclass, property } = _decorator;
 
@@ -19,25 +19,47 @@ export class GameCtrl extends Component {
     
     
     
-
-    
-    start() {
+  start() {
+    if (this.player && this.camera) {
+        this.player.initialize(this.camera);
 
     }
 
+    input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+    input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+    input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
+    input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
+    input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+
+    }
     protected onDestroy(): void {
-        
+        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+        input.off(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
+        input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
+        input.off(Input.EventType.MOUSE_UP, this.onMouseUp, this);
     }
 
     update(deltaTime: number) {
         
     }
 
-    private onKeyUp(event: EventKeyboard): void { }
-    private onKeyDown(event: EventKeyboard): void { }
-    private onMouseMove(event: EventMouse): void { }
-    private onMouseDown(event: EventMouse): void { }
-    private onMouseUp(event: EventMouse): void { }
+    private onKeyDown(event: EventKeyboard): void { 
+        if (this.player) this.player.processKeyDown(event)
+    }
+    private onKeyUp(event: EventKeyboard): void {
+        if (this.player) this.player.processKeyUp(event)
+    }
+    private onMouseMove(event: EventMouse): void {
+        if (this.player) this.player.processMouseMove(event)
+    }
+    private onMouseDown(event: EventMouse): void {
+        if (this.player) this.player.processMouseDown(event)
+    }
+    private onMouseUp(event: EventMouse): void {
+        if (this.player) this.player.processMouseUp(event)
+    }
+
 }
 
 
