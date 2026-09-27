@@ -6,11 +6,11 @@ const { ccclass, property } = _decorator;
 @ccclass('WeaponFactory')
 export class WeaponFactory extends Component {
 
-    public static createWeapon(config: WeaponConfig, bulletPrefab: Prefab, playerNode: Node, bulletContainer: Node) {
+    public static createWeapon(config: WeaponConfig, bulletPrefab: Prefab, playerNode: Node, bulletContainer: Node, isPlayerWeapon: boolean) {
         let weaponNode = new Node(config.name)
         weaponNode.setParent(playerNode);
         let weaponComp = weaponNode.addComponent(Weapon);
-        weaponComp.initialize(config, bulletPrefab, bulletContainer);
+        weaponComp.initialize(config, bulletPrefab, bulletContainer, isPlayerWeapon);
         return weaponNode;
     }
 

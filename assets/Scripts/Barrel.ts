@@ -15,7 +15,7 @@ export class Barrel extends Component {
     }
 
     public shoot(bulletNode: Node, bulletContainer: Node, playerAngleDegrees: number, 
-        speed: number, pool: NodePool, damage: number) {
+        speed: number, pool: NodePool, damage: number, isPlayerWeapon: boolean) {
 
         bulletNode.setParent(bulletContainer);
         bulletNode.active = true;
@@ -29,7 +29,7 @@ export class Barrel extends Component {
 
         let bulletScript = bulletNode.getComponent(Bullet)
         if (bulletScript) {
-            bulletScript.initialize(pool, velocity, damage);
+            bulletScript.initialize(pool, velocity, damage, isPlayerWeapon);
         }
     }
 }

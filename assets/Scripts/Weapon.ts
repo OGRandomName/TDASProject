@@ -21,12 +21,13 @@ export class Weapon extends Component {
     private burstDelay: number | null = null;
     private burstTimer: number = 0
     private pendingBurstShots: number = 0;
+    private isPlayerWeapon: boolean = false;
 
     public get currentFireMode(): FireMode {
         return this.fireMode;
     }
     
-    public initialize(config: WeaponConfig, prefab: Prefab, container: Node) {
+    public initialize(config: WeaponConfig, prefab: Prefab, container: Node, isPlayerWeapon: boolean) {
         this.bulletPrefab = prefab;
         this.bulletContainer = container;
         this.fireMode = config.fireMode;
@@ -35,6 +36,7 @@ export class Weapon extends Component {
         this.damageAmount = config.damageAmount;
         this.burstCount = config.burstCount ?? 0
         this.burstDelay = config.burstDelay ?? 0
+        this.isPlayerWeapon = !!isPlayerWeapon;
 
         this.setUpObjectPool(config);
         this.setUpBarrels(config);
@@ -90,6 +92,8 @@ export class Weapon extends Component {
     }
 
     private executeFireLogic(playerAngle: number) {
+        const isPlayerWeapon = this.isPlayerWeapon === true;
+
         for (let barrel of this.barrels) {
             let bulletNode = this.magazinePool.get();
             if (!bulletNode) return;
@@ -99,7 +103,8 @@ export class Weapon extends Component {
                 playerAngle,
                 this.bulletSpeed,
                 this.magazinePool,
-                this.damageAmount
+                this.damageAmount,
+                isPlayerWeapon,
             );
         }
     }
