@@ -1,4 +1,4 @@
-import { _decorator, Camera, Component, EventKeyboard, EventMouse, KeyCode, log, Node, Vec2, Vec3 } from 'cc';
+import { _decorator, Camera, Component, EventKeyboard, EventMouse, KeyCode, log, Node, Vec2, Vec3, math } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerInputSystem')
@@ -73,7 +73,9 @@ export class PlayerInputSystem extends Component {
             log("Input System: Mouse button released");
         }
     }
-    public handleMouseMove(event: EventMouse): void { }
+    public handleMouseMove(event: EventMouse, camera: Camera, playerPos: Readonly<Vec3>): number { 
+        return this.calculateRotationAngle(event, camera, playerPos)
+    }
 
     public getMoveDirection(): Vec2 {
         this.moveDir.x = (this.isRight ? 1 : 0) - (this.isLeft ? 1 : 0);
@@ -83,7 +85,14 @@ export class PlayerInputSystem extends Component {
     }
 
     public calculateRotationAngle(event: EventMouse, camera: Camera, playerPos: Readonly<Vec3>): number {
-        return 0;
+
+        let mouseScreenPos = event.getLocation()
+        let mouseWorldPos = new Vec3
+        camera.screenToWorld(new Vec3(mouseScreenPos.x, mouseScreenPos.y, 0), mouseWorldPos);
+
+        let dx = mouseWorldPos.x - playerPos.x;
+        let dy = mouseWorldPos.y - playerPos.y;
+        return math.toDegree(Math.atan2(dy, dx));
     }
 }
 
