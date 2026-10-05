@@ -16,7 +16,7 @@ export class PlayerWeaponSystem extends Component {
         this.currentWeapon = this.currentWeaponNode.getComponent(Weapon);
 }
 
-    public processFiring(isFiring: boolean, currentAngle: number, dt: number): void {
+    public processFiring(isFiring: boolean, currentAngle: number, ): void {
         if (!this.currentWeapon || !isFiring) return;
 
         if (this.currentWeapon.currentFireMode !== FireMode.SEMI_AUTO) {

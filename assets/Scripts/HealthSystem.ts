@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('HealthSystem')
 export class HealthSystem extends Component {
 
-    private maxHealth: number;
+    public maxHealth: number;
     private currentHealth: number;
     private _isDead: boolean;
     public get isDead(): boolean {
