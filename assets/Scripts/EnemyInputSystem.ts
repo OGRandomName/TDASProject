@@ -5,21 +5,29 @@ import { WanderBehavior } from './WanderBehavior';
 import { IState } from './IState';
 import { PatrolState } from './PatrolState';
 import { ArrivedState } from './ArrivedState';
+import { ChaseState } from './ChaseState';
+import { LostPlayerState } from './LostPlayerState';
 const { ccclass, property } = _decorator;
 
 @ccclass('EnemyInputSystem')
 export class EnemyInputSystem extends Component implements IInputSystem {
-//    private seek: SeekBehavior = new SeekBehavior();
+    public seek: SeekBehavior = new SeekBehavior();
     public wander: WanderBehavior = new WanderBehavior();
-//    private targetNode: Node | null = null;
+    public targetNode: Node | null = null;
 
     public patrolState: PatrolState = new PatrolState()
     public arrivedState: ArrivedState = new ArrivedState()
+    public chaseState: ChaseState = new ChaseState()
+    public lostPlayerState: LostPlayerState = new LostPlayerState()
+
+    public spotPlayerDistance: number = 200
+    public losePlayerDistance: number = 250
 
     private currentState: IState | null = null;
     private currentMoveDir: Vec2 = new Vec2
 
-    public initialize(wayPoints: Vec2[]) {
+    public initialize(targetNode: Node, wayPoints: Vec2[]) {
+        this.targetNode = targetNode;
         this.wander.setWayPoints(wayPoints);
 
         this.changeState(this.patrolState)
@@ -52,5 +60,18 @@ export class EnemyInputSystem extends Component implements IInputSystem {
     public getRotationAngle(): number | null {
         return null;
     }
-}
 
+    public getDistanceToPlayer(myPos: Vec2): number {
+        if(!this.targetNode) return Infinity
+        
+        let playerPos = this.getPlayerPos()
+        return Vec2.distance(myPos, playerPos)
+    }
+
+    public getPlayerPos(): Vec2 {
+        return new Vec2(
+            this.targetNode!.worldPosition.x,
+            this.targetNode!.worldPosition.y
+        );
+    }
+}

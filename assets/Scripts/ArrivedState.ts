@@ -18,10 +18,10 @@ export class ArrivedState implements IState {
     execute(brain: EnemyInputSystem, dt: number): void {
         this.timer -= dt
         const myPos = new Vec2(brain.node.worldPosition.x, brain.node.worldPosition.y)
-        // if (brain.getDistanceToPlayer(myPos) < brain.spotPlayerDistance) {
-        //     brain.changeState(brain.chaseState)
-        //     return
-        // }
+         if (brain.getDistanceToPlayer(myPos) < brain.spotPlayerDistance) {
+             brain.changeState(brain.chaseState)
+             return
+         }
 
         if (this.timer <= 0) {
             // brain.wander.pickNewWanderPoint()
