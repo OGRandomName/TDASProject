@@ -45,6 +45,8 @@ export class Enemy extends Component {
         }
 
         if (this.inputSystem && this.movementSystem) {
+
+            this.inputSystem.processFSM(deltaTime)
             
             let moveDir = this.inputSystem.getMoveDirection()
 

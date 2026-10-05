@@ -2,31 +2,51 @@ import { _decorator, Component, math, Node, Vec2 } from 'cc';
 import { SeekBehavior } from './SeekBehavior';
 import { IInputSystem } from './IInputSystem';
 import { WanderBehavior } from './WanderBehavior';
+import { IState } from './IState';
+import { PatrolState } from './PatrolState';
+import { ArrivedState } from './ArrivedState';
 const { ccclass, property } = _decorator;
 
 @ccclass('EnemyInputSystem')
 export class EnemyInputSystem extends Component implements IInputSystem {
 //    private seek: SeekBehavior = new SeekBehavior();
-    private wander: WanderBehavior = new WanderBehavior();
+    public wander: WanderBehavior = new WanderBehavior();
 //    private targetNode: Node | null = null;
+
+    public patrolState: PatrolState = new PatrolState()
+    public arrivedState: ArrivedState = new ArrivedState()
+
+    private currentState: IState | null = null;
+    private currentMoveDir: Vec2 = new Vec2
 
     public initialize(wayPoints: Vec2[]) {
         this.wander.setWayPoints(wayPoints);
+
+        this.changeState(this.patrolState)
+    }
+
+    public changeState(newState: IState) {
+        if (this.currentState && this.currentState != newState) {
+            this.currentState.exit(this)
+        }
+        if (this.currentState != newState) {
+            this.currentState = newState
+            this.currentState.enter(this)
+        }
+    }
+
+    public processFSM(dt: number) {
+        if (this.currentState) {
+            this.currentState.execute(this, dt)
+        }
+    }
+
+    public setMoveDirection(dir: Vec2) {
+        this.currentMoveDir = dir;
     }
 
     public getMoveDirection(): Vec2 {
-   //     if (!this.targetNode) return Vec2.ZERO;
-
-        let currentPos = new Vec2(
-            this.node.worldPosition.x, this.node.worldPosition.y
-        );
-//        const targetPos = new Vec2(
-//            this.targetNode.worldPosition.x, this.targetNode.worldPosition.y
-//        );
-        if (this.wander.hasArrived(currentPos)) {
-            (this.wander as any).pickNewWanderPoint();
-        }
-        return this.wander.getDesiredVelocity(currentPos);
+        return this.currentMoveDir;
     }
 
     public getRotationAngle(): number | null {

@@ -15,7 +15,7 @@ export class WanderBehavior implements ISteeringBehavior {
         this.pickNewWanderPoint()
     }
 
-    private pickNewWanderPoint() {
+    public pickNewWanderPoint() {
         if (this.wayPoints.length <= 0) return 0
         this.currentWayPointIndex = math.randomRangeInt(0, this.wayPoints.length)
     }

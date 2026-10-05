@@ -36,7 +36,7 @@ export class EnemyMovementSystem extends Component {
 
         let currentVelocity = this.getVelocity();
         
-        let desiredVelocity = new Vec2
+        let desiredVelocity = new Vec2()
         Vec2.multiplyScalar(desiredVelocity, moveDir, this.maxSpeed)
 
         let steeringForce = new Vec2
