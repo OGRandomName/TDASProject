@@ -1,4 +1,4 @@
-import { _decorator, Component, math, Node, Vec2 } from 'cc';
+import { _decorator, Component, Label, math, Node, Vec2 } from 'cc';
 import { SeekBehavior } from './SeekBehavior';
 import { IInputSystem } from './IInputSystem';
 import { WanderBehavior } from './WanderBehavior';
@@ -11,6 +11,10 @@ const { ccclass, property } = _decorator;
 
 @ccclass('EnemyInputSystem')
 export class EnemyInputSystem extends Component implements IInputSystem {
+    
+    @property({ type: Label })
+    public stateDebugLabel: Label | null = null;
+    
     public seek: SeekBehavior = new SeekBehavior();
     public wander: WanderBehavior = new WanderBehavior();
     public targetNode: Node | null = null;
@@ -40,6 +44,10 @@ export class EnemyInputSystem extends Component implements IInputSystem {
         if (this.currentState != newState) {
             this.currentState = newState
             this.currentState.enter(this)
+
+            if (this.stateDebugLabel) {
+                this.stateDebugLabel.string = newState.constructor.name;
+            }
         }
     }
 
