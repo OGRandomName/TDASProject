@@ -5,6 +5,7 @@ import { EnemyInputSystem } from "./EnemyInputSystem"
 export class ChaseState implements IState {
     private stuckTimer: number = 0;
     private stuckThresholdTime: number = 1;
+    private attackRange: number = 50
 
     enter(brain: EnemyInputSystem): void {
         this.stuckTimer = 0;
@@ -15,25 +16,31 @@ export class ChaseState implements IState {
 
         let myPos = new Vec2(brain.node.worldPosition.x, brain.node.worldPosition.y)
 
-        if (brain.getDistanceToPlayer(myPos) > brain.losePlayerDistance) {
+        let dist = brain.getDistanceToPlayer(myPos)
+        if ( dist > brain.losePlayerDistance) {
             brain.changeState(brain.lostPlayerState)
             return
         }
 
+        if (dist > this.attackRange) {
+            if (brain.isMovingSlowly) {
+                this.stuckTimer += dt;
+
+                if (this.stuckTimer >= this.stuckThresholdTime) {
+                    brain.changeState(brain.stuckState)
+                    return
+                }
+            } 
+            else {
+                this.stuckTimer = Math.max(0, this.stuckTimer - (dt * 2))
+            }
+        } 
+        else {
+            this.stuckTimer = 0
+        }
+
         let dir = brain.seek.getDesiredVelocity(myPos, brain.getPlayerPos())
         brain.setMoveDirection(dir)
-
-        if (brain.isMovingSlowly) {
-            this.stuckTimer += dt;
-            
-            if (this.stuckTimer >= this.stuckThresholdTime) {
-                brain.changeState(brain.stuckState)
-                return
-            }
-        }
-        else {
-            this.stuckTimer = Math.max(0, this.stuckTimer - (dt * 2))
-        }
     }
 
     exit(brain: EnemyInputSystem): void {
