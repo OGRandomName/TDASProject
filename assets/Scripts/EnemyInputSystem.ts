@@ -7,6 +7,8 @@ import { PatrolState } from './PatrolState';
 import { ArrivedState } from './ArrivedState';
 import { ChaseState } from './ChaseState';
 import { LostPlayerState } from './LostPlayerState';
+import { FleeBehavior } from './FleeBehavior';
+import { StuckState } from './StuckState';
 const { ccclass, property } = _decorator;
 
 @ccclass('EnemyInputSystem')
@@ -17,18 +19,28 @@ export class EnemyInputSystem extends Component implements IInputSystem {
     
     public seek: SeekBehavior = new SeekBehavior();
     public wander: WanderBehavior = new WanderBehavior();
+    public flee: FleeBehavior = new FleeBehavior();
     public targetNode: Node | null = null;
 
     public patrolState: PatrolState = new PatrolState()
     public arrivedState: ArrivedState = new ArrivedState()
     public chaseState: ChaseState = new ChaseState()
     public lostPlayerState: LostPlayerState = new LostPlayerState()
+    public stuckState: StuckState = new StuckState()
 
     public spotPlayerDistance: number = 200
     public losePlayerDistance: number = 250
 
     private currentState: IState | null = null;
     private currentMoveDir: Vec2 = new Vec2
+
+    private _isMovingSlowly: boolean; 
+    public get isMovingSlowly(): boolean {
+        return this._isMovingSlowly;
+    }
+    public set isMovingSlowly(value: boolean) {
+        this._isMovingSlowly = value;
+    }
 
     public initialize(targetNode: Node, wayPoints: Vec2[]) {
         this.targetNode = targetNode;
