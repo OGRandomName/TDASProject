@@ -1,15 +1,10 @@
-import { _decorator, Component, Node } from 'cc';
-const { ccclass, property } = _decorator;
+import { Vec2} from "cc"
+import { ISteeringBehavior } from "./ISteeringBehavior"
 
-@ccclass('FleeBehavior')
-export class FleeBehavior extends Component {
-    start() {
-
-    }
-
-    update(deltaTime: number) {
-        
+export class FleeBehavior implements ISteeringBehavior {
+    getDesiredVelocity(currentPosition: Vec2, targetPosition?: Readonly<Vec2>): Vec2 {
+        let desiredDir = new Vec2
+        Vec2.subtract(desiredDir, currentPosition, targetPosition)
+        return desiredDir.normalize()
     }
 }
-
-
