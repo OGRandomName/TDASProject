@@ -31,13 +31,15 @@ export class EnemyInputSystem extends Component implements IInputSystem {
     public lostPlayerState: LostPlayerState = new LostPlayerState()
     public stuckState: StuckState = new StuckState()
 
-    public spotPlayerDistance: number = 200
-    public losePlayerDistance: number = 250
+    public spotPlayerDistance: number 
+    public losePlayerDistance: number 
 
     private currentState: IState | null = null;
     private currentMoveDir: Vec2 = new Vec2
+    private targetVelocity: Vec2 = new Vec2()
 
     private _isMovingSlowly: boolean; 
+    lastTargetPos: math.Vec2;
     public get isMovingSlowly(): boolean {
         return this._isMovingSlowly;
     }
@@ -47,8 +49,11 @@ export class EnemyInputSystem extends Component implements IInputSystem {
 
     public initialize(targetNode: Node, wayPoints: Vec2[], intentConfig: IntentConfig) {
         this.targetNode = targetNode;
+        this.lastTargetPos = new Vec2(targetNode.worldPosition.x, targetNode.worldPosition.y)
         this.wander.init(wayPoints, intentConfig)
         this.compositeIntent.setWeights(intentConfig)
+        this.spotPlayerDistance = intentConfig.spotPlayerDistance;
+        this.losePlayerDistance = intentConfig.lostPlayerDistance;
 
         this.changeState(this.patrolState)
     }
@@ -68,9 +73,25 @@ export class EnemyInputSystem extends Component implements IInputSystem {
     }
 
     public processFSM(dt: number) {
+
+        if (this.targetNode) {
+            let currentTargetPos = new Vec2(this.targetNode.worldPosition.x, this.targetNode.worldPosition.y)
+            Vec2.subtract(this.targetVelocity, currentTargetPos, this.lastTargetPos)
+        
+            this.targetVelocity.multiplyScalar(1 / dt)
+            this.lastTargetPos = currentTargetPos
+        
+        } 
+
+
+
+
         if (this.currentState) {
             this.currentState.execute(this, dt)
         }
+    }
+    public getTargetVelocity(): Vec2 {
+        return this.targetVelocity;
     }
 
     public setMoveDirection(dir: Vec2) {

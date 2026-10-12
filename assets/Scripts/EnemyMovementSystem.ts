@@ -26,8 +26,8 @@ export class EnemyMovementSystem extends Component {
         this.debugGraphics = this.getComponent(Graphics)
     }
 
-    public init(movementConfig: MovementConfig) {
-        this.maxSpeed = movementConfig.maxSpeed;
+    public init(maxSpeed: number, movementConfig: MovementConfig) {
+        this.maxSpeed = maxSpeed;
         this.maxTurnForce = movementConfig.maxTurnForce;
         this.tacticalSteering = new TacticalSteeringBehavior(
             movementConfig,
