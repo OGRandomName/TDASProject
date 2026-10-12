@@ -261,7 +261,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 11
@@ -420,7 +420,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 17
@@ -699,7 +699,8 @@
     "maxSpeed": 4,
     "maxTurnForce": 0.2,
     "avoidWeight": 3,
-    "seperationWeight": 0,
+    "separationWeight": 4,
+    "separationRadius": 100,
     "alignmentWeight": 0,
     "cohesionWeight": 0,
     "_id": ""

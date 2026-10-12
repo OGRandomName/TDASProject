@@ -9,6 +9,7 @@ export class AvoidBehavior implements ISteeringBehavior {
     private whiskers: WhiskerConfig[] | null = null 
     private currentHitNormals: Vec2[] = []
 
+    private readonly GROUP_OBSTACLES = 1 << 5
     constructor(enemyMovementSystem: EnemyMovementSystem, whiskerConfig: WhiskerConfig[]) {
         this.brain = enemyMovementSystem
         this.whiskers = whiskerConfig
@@ -39,7 +40,7 @@ export class AvoidBehavior implements ISteeringBehavior {
             let worldAngle = myAngle + whisker.angle
             let worldEnd = this.getEndPoint(worldStart, worldAngle, whisker.length)
         
-            let results = PhysicsSystem2D.instance.raycast(worldStart, worldEnd, ERaycast2DType.Closest)
+            let results = PhysicsSystem2D.instance.raycast(worldStart, worldEnd, ERaycast2DType.Closest,this.GROUP_OBSTACLES)
             if (results.length > 0) {
                 let hit = results[0] // Assuming we only care about the first hit
 

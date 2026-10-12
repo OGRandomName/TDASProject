@@ -7,6 +7,8 @@ import { IntentConfig, MovementConfig } from './EnemyConfig';
 @ccclass('Enemy')
 export class Enemy extends Component {
 
+    public static activeEnemies: Enemy[] = []
+
     @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1] })
     public seekWeight: number = 1.0
 
@@ -23,9 +25,12 @@ export class Enemy extends Component {
     public avoidWeight: number = 3
     
     @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
-    public seperationWeight: number = 0
-    
-    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
+    public separationWeight: number = 0
+
+    @property({ group: 'Movement Weights', slide: true, range: [0, 150, 5] })
+    public separationRadius: number = 50
+
+    @property({ group: 'Movement Weights', slide: true, range: [0, 1, 0.1] })
     public alignmentWeight: number = 0
     
     @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
@@ -40,6 +45,8 @@ export class Enemy extends Component {
 
 
     protected onLoad() {
+
+        Enemy.activeEnemies.push(this);
         this.inputSystem = this.getComponent(EnemyInputSystem);
         this.movementSystem = this.getComponent(EnemyMovementSystem);
         this.healthSystem = this.getComponent(HealthSystem);
@@ -56,9 +63,10 @@ export class Enemy extends Component {
             maxTurnForce: this.maxTurnForce,
             avoidWeight: this.avoidWeight,
             flocking: {
-                seperationWeight: this.seperationWeight,
+                separationWeight: this.separationWeight,
                 alignmentWeight: this.alignmentWeight,
-                cohesionWeight: this.cohesionWeight
+                cohesionWeight: this.cohesionWeight,
+                separationRadius: this.separationRadius
             },
             whiskers: [
                 { startPos: new Vec2, angle: 0, length: 100 },
@@ -111,6 +119,11 @@ export class Enemy extends Component {
             this.inputSystem.stateDebugLabel.node.angle = -this.node.angle;
         }
     }
+
+    protected onDestroy() {
+        let index = Enemy.activeEnemies.indexOf(this);
+        if (index > -1) {
+            Enemy.activeEnemies.splice(index, 1);
+        }
+    }
 }
-
-
