@@ -701,8 +701,10 @@
     "avoidWeight": 3,
     "separationWeight": 4,
     "separationRadius": 100,
-    "alignmentWeight": 0,
-    "cohesionWeight": 0,
+    "alignmentWeight": 4,
+    "alignmentRadius": 180,
+    "cohesionWeight": 3,
+    "cohesionRadius": 100,
     "_id": ""
   },
   {

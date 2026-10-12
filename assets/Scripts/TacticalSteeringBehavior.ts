@@ -4,6 +4,8 @@ import { MovementConfig } from "./EnemyConfig";
 import { EnemyMovementSystem } from "./EnemyMovementSystem";
 import { AvoidBehavior } from "./AvoidBehavior";
 import { SeparationBehavior } from "./SeparationBehavior";
+import { AlignmentBehavior } from "./AlignmentBehavior";
+import { CohesionBehavior } from "./CohesionBehavior";
 
 export class TacticalSteeringBehavior implements ISteeringBehavior {
     
@@ -12,12 +14,16 @@ export class TacticalSteeringBehavior implements ISteeringBehavior {
     private brain: EnemyMovementSystem
     private avoidBehavior?: AvoidBehavior
     private separationBehavior: SeparationBehavior
+    private alignmentBehavior: AlignmentBehavior
+    private cohesionBehavior: CohesionBehavior
 
     constructor(movementConfig: MovementConfig, enemyMovementSystem: EnemyMovementSystem, avoidBehavior?: AvoidBehavior) {
         this.movementConfig = movementConfig;
         this.brain = enemyMovementSystem;
         this.avoidBehavior = avoidBehavior = new AvoidBehavior(enemyMovementSystem, movementConfig.whiskers);
         this.separationBehavior = new SeparationBehavior(enemyMovementSystem, movementConfig.flocking.separationRadius);
+        this.alignmentBehavior = new AlignmentBehavior(enemyMovementSystem, movementConfig.flocking.alignmentRadius);
+        this.cohesionBehavior = new CohesionBehavior(enemyMovementSystem, movementConfig.flocking.cohesionRadius);
     }
 
     getDesiredVelocity(currentPosition: math.Vec2, targetPosition?: Readonly<math.Vec2>): math.Vec2 {
@@ -39,11 +45,15 @@ export class TacticalSteeringBehavior implements ISteeringBehavior {
         }
 
         if (this.movementConfig.flocking.alignmentWeight > 0) {
-            // Implementation for alignment force
+            let alignmentForce = this.alignmentBehavior.getDesiredVelocity(currentPosition)
+            alignmentForce.multiplyScalar(this.movementConfig.flocking.alignmentWeight)
+            totalTacticalForce.add(alignmentForce)
         }
 
         if (this.movementConfig.flocking.cohesionWeight > 0) {
-            // Implementation for cohesion force
+            let cohesionForce = this.cohesionBehavior.getDesiredVelocity(currentPosition)
+            cohesionForce.multiplyScalar(this.movementConfig.flocking.cohesionWeight)
+            totalTacticalForce.add(cohesionForce)
         }
 
         if (totalTacticalForce.lengthSqr() > 0) {

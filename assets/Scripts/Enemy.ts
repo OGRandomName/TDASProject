@@ -30,12 +30,18 @@ export class Enemy extends Component {
     @property({ group: 'Movement Weights', slide: true, range: [0, 150, 5] })
     public separationRadius: number = 50
 
-    @property({ group: 'Movement Weights', slide: true, range: [0, 1, 0.1] })
+    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
     public alignmentWeight: number = 0
+
+    @property({ group: 'Movement Weights', slide: true, range: [0,300, 5] })
+    public alignmentRadius: number = 100
     
     @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
     public cohesionWeight: number = 0
-    
+
+    @property({ group: 'Movement Weights', slide: true, range: [0, 500, 5] })
+    public cohesionRadius: number = 100
+
     private inputSystem: EnemyInputSystem | null = null
     private movementSystem: EnemyMovementSystem | null = null
     private healthSystem: HealthSystem | null = null
@@ -65,8 +71,10 @@ export class Enemy extends Component {
             flocking: {
                 separationWeight: this.separationWeight,
                 alignmentWeight: this.alignmentWeight,
+                alignmentRadius: this.alignmentRadius,
                 cohesionWeight: this.cohesionWeight,
-                separationRadius: this.separationRadius
+                separationRadius: this.separationRadius,
+                cohesionRadius: this.cohesionRadius
             },
             whiskers: [
                 { startPos: new Vec2, angle: 0, length: 100 },
