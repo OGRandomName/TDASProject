@@ -8,17 +8,29 @@ import { IntentConfig, MovementConfig } from './EnemyConfig';
 export class Enemy extends Component {
 
     @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1] })
-    public seekWeight: number = 1
+    public seekWeight: number = 1.0
 
     @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1] })
     public fleeWeight: number = 0.0
 
-    @property({ group: 'Intent Weights', slide: true, range: [0, 5, 0.1] })
+    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
     public maxSpeed: number = 4
     
-    @property({ group: 'Intent Weights', slide: true, range: [0, 1, 0.1] })
+    @property({ group: 'Movement Weights', slide: true, range: [0, 1, 0.1] })
     public maxTurnForce: number = 0.2
 
+    @property({ group: 'Movement Weights', slide: true, range: [0, 10, 0.1] })
+    public avoidWeight: number = 3
+    
+    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
+    public seperationWeight: number = 0
+    
+    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
+    public alignmentWeight: number = 0
+    
+    @property({ group: 'Movement Weights', slide: true, range: [0, 5, 0.1] })
+    public cohesionWeight: number = 0
+    
     private inputSystem: EnemyInputSystem | null = null
     private movementSystem: EnemyMovementSystem | null = null
     private healthSystem: HealthSystem | null = null
@@ -41,7 +53,20 @@ export class Enemy extends Component {
         };
         this.movementConfig = {
             maxSpeed: this.maxSpeed,
-            maxTurnForce: this.maxTurnForce
+            maxTurnForce: this.maxTurnForce,
+            avoidWeight: this.avoidWeight,
+            flocking: {
+                seperationWeight: this.seperationWeight,
+                alignmentWeight: this.alignmentWeight,
+                cohesionWeight: this.cohesionWeight
+            },
+            whiskers: [
+                { startPos: new Vec2, angle: 0, length: 100 },
+                { startPos: new Vec2, angle: 25, length: 75 },
+                { startPos: new Vec2, angle: -25, length: 75 },
+                { startPos: new Vec2, angle: 45, length: 50 },
+                { startPos: new Vec2, angle: -45, length: 50 }
+            ]
         };
 
     }
