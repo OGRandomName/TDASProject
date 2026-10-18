@@ -121,24 +121,24 @@
     "__prefab": null,
     "scale": {
       "__type__": "cc.Vec2",
-      "x": 3,
-      "y": 3
+      "x": 0.8,
+      "y": 0.8
     },
-    "health": 100,
+    "health": 20,
     "seekWeight": 2,
-    "fleeWeight": 0,
+    "fleeWeight": 1,
     "maxPredictionTime": 2,
-    "maxSpeed": 3,
+    "maxSpeed": 3.5,
     "spotPlayerDistance": 400,
-    "lostPlayerDistance": 500,
-    "maxTurnForce": 0.1,
-    "avoidWeight": 3,
-    "separationWeight": 4,
-    "separationRadius": 100,
-    "alignmentWeight": 0,
-    "alignmentRadius": 100,
-    "cohesionWeight": 0,
-    "cohesionRadius": 200,
+    "lostPlayerDistance": 450,
+    "maxTurnForce": 0.3,
+    "avoidWeight": 2.5,
+    "separationWeight": 1.5,
+    "separationRadius": 40,
+    "alignmentWeight": 2,
+    "alignmentRadius": 120,
+    "cohesionWeight": 2,
+    "cohesionRadius": 90,
     "whiskers": [
       {
         "__id__": 4
@@ -156,7 +156,7 @@
         "__id__": 8
       }
     ],
-    "configNamePrefix": "Boss",
+    "configNamePrefix": "Scout",
     "_id": "15utGgUeRCnIqgVAe9kzFb"
   },
   {
@@ -490,7 +490,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 431.5657620041754,
+    "_orthoHeight": 648.0250783699059,
     "_near": 0,
     "_far": 2000,
     "_color": {

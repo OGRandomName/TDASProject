@@ -1,25 +1,25 @@
 {
     "scale": {
-        "x": 1,
-        "y": 1
+        "x": 3,
+        "y": 3
     },
-    "health": 20,
+    "health": 100,
     "intent": {
         "seekWeight": 2,
-        "fleeWeight": 1,
-        "maxSpeed": 4,
+        "fleeWeight": 0,
+        "maxSpeed": 3,
         "maxPredictionTime": 2,
-        "spotPlayerDistance": 250,
-        "lostPlayerDistance": 200
+        "spotPlayerDistance": 400,
+        "lostPlayerDistance": 500
     },
     "moving": {
-        "maxTurnForce": 0.2,
+        "maxTurnForce": 0.1,
         "avoidWeight": 3,
         "flocking": {
-            "separationWeight": 1,
+            "separationWeight": 4,
             "alignmentWeight": 0,
-            "cohesionWeight": 1.5,
-            "separationRadius": 50,
+            "cohesionWeight": 0,
+            "separationRadius": 100,
             "alignmentRadius": 100,
             "cohesionRadius": 200
         },

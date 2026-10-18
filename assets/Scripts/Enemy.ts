@@ -1,4 +1,4 @@
-import { _decorator, Component, find, Node, Vec2 } from 'cc';
+import { _decorator, Component, find, JsonAsset, log, Node, Vec2 } from 'cc';
 import { EnemyInputSystem } from './EnemyInputSystem';
 const { ccclass, property } = _decorator;
 import { EnemyMovementSystem } from './EnemyMovementSystem';
@@ -17,11 +17,28 @@ export class Enemy extends Component {
     private intentConfig: IntentConfig & { lostPlayerDistance: number }
     private movementConfig: MovementConfig
 
+    private configLoaded: boolean = false
+
+    @property ({ type: JsonAsset})
+    public testConfigFile: JsonAsset | null = null
+
 
     protected onLoad() {
 
         Enemy.activeEnemies.push(this);
 
+    }
+    protected start() {
+    if (!this.configLoaded) {
+        if (this.testConfigFile && this.testConfigFile.json) {
+            let configData = this.testConfigFile.json as unknown as EnemyConfig;
+            log('{Enemy} Reading configuration form ${this.testConfigFile.name}...');
+            this.init(configData);
+            }
+            else {
+                log('{Enemy} No configuration file assigned or file is empty.');
+            }
+        }
     }
 
     public init(enemyConfig: EnemyConfig) {
@@ -36,6 +53,7 @@ export class Enemy extends Component {
             this.healthSystem = this.getComponent(HealthSystem);
         }
 
+        this.configLoaded = true
     
         this.node.setScale(enemyConfig.scale.x, enemyConfig.scale.y, 1);
         

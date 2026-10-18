@@ -694,20 +694,10 @@
     "__prefab": {
       "__id__": 33
     },
-    "seekWeight": 2.5,
-    "fleeWeight": 0,
-    "maxPredictionTime": 2,
-    "maxSpeed": 4,
-    "spotPlayerDistance": 200,
-    "lostPlayerDistance": 250,
-    "maxTurnForce": 0.2,
-    "avoidWeight": 5,
-    "separationWeight": 3,
-    "separationRadius": 90,
-    "alignmentWeight": 4,
-    "alignmentRadius": 180,
-    "cohesionWeight": 3,
-    "cohesionRadius": 360,
+    "testConfigFile": {
+      "__uuid__": "6f34d820-f5c5-4723-9789-22dbe553eaf0",
+      "__expectedType__": "cc.JsonAsset"
+    },
     "_id": ""
   },
   {
