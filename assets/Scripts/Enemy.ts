@@ -1,111 +1,93 @@
-import { _decorator, Component, find, JsonAsset, log, Node, Vec2 } from 'cc';
+import { _decorator, Component, find, log, Node, Vec2 } from 'cc';
 import { EnemyInputSystem } from './EnemyInputSystem';
-const { ccclass, property } = _decorator;
 import { EnemyMovementSystem } from './EnemyMovementSystem';
 import { HealthSystem } from './HealthSystem';
-import { EnemyConfig, IntentConfig, MovementConfig } from './EnemyConfig';
+import { EnemyConfig } from './EnemyConfig';
 import { EventBus, GameEvents } from './EventBus';
+
+const { ccclass, property } = _decorator;
+
 @ccclass('Enemy')
 export class Enemy extends Component {
 
+    private inputSystem: EnemyInputSystem | null = null;
+    private movementSystem: EnemyMovementSystem | null = null;
+    private healthSystem: HealthSystem | null = null;
 
-
-    private inputSystem: EnemyInputSystem | null = null
-    private movementSystem: EnemyMovementSystem | null = null
-    private healthSystem: HealthSystem | null = null
-
-    private configLoaded: boolean = false
-
-    @property ({ type: JsonAsset})
-    public testConfigFile: JsonAsset | null = null
-
+    private configLoaded = false;
 
     protected onLoad() {
-
-
-    }
-    protected start() {
-    if (!this.configLoaded) {
-        if (this.testConfigFile && this.testConfigFile.json) {
-            let configData = this.testConfigFile.json as unknown as EnemyConfig;
-            log('{Enemy} Reading configuration form ${this.testConfigFile.name}...');
-            this.init(configData);
-            }
-            else {
-                log('{Enemy} No configuration file assigned or file is empty.');
-            }
-        }
+        this.inputSystem = this.getComponent(EnemyInputSystem);
+        this.movementSystem = this.getComponent(EnemyMovementSystem);
+        this.healthSystem = this.getComponent(HealthSystem);
     }
 
+    // SINGLE init path: called only by Wavefactory
     public init(enemyConfig: EnemyConfig, providedTarget?: Node, providedWanderPoints?: Vec2[]) {
-        if (!this.inputSystem) {
-            this.inputSystem = this.getComponent(EnemyInputSystem);
-
-        }
-        if (!this.movementSystem) {
-            this.movementSystem = this.getComponent(EnemyMovementSystem);
-        }
-        if (!this.healthSystem) {
-            this.healthSystem = this.getComponent(HealthSystem);
+        if (!enemyConfig) {
+            log('[Enemy] init called with null config');
+            return;
         }
 
-        this.configLoaded = true
-    
+        this.configLoaded = true;
+
         this.node.setScale(enemyConfig.scale.x, enemyConfig.scale.y, 1);
-        
-
-        if(this.healthSystem) {
-            this.healthSystem.initialize(20); // Example max health
-        }
-        
-        if (this.inputSystem) {
-            let targetNode = providedTarget || find("Canvas/Player")
-            let wanderPoints = providedWanderPoints
-            if(!wanderPoints) {
-                this.node.getParent().getChildByName("WanderNodes").children.map(
-                child => new Vec2(child.worldPosition.x, child.worldPosition.y))
-            }
-            this.inputSystem.initialize(targetNode, wanderPoints, enemyConfig.intent);
-        }
-
-        if (this.movementSystem) {
-            this.movementSystem.init(enemyConfig.intent.maxSpeed, enemyConfig.moving)
-        }
 
         if (this.healthSystem) {
             this.healthSystem.initialize(enemyConfig.health);
         }
-    }
 
+        const targetNode = providedTarget || find('Canvas/Player');
+        let wanderPoints = providedWanderPoints;
 
-    update(deltaTime: number) {
-        if (this.healthSystem) {
-            if (this.healthSystem.isDead) {
-                this.node.destroy()
+        if (!wanderPoints || wanderPoints.length === 0) {
+            const parent = this.node.parent;
+            const wanderRoot = parent?.getChildByName('WanderNodes');
+            if (wanderRoot) {
+                wanderPoints = wanderRoot.children.map(
+                    child => new Vec2(child.worldPosition.x, child.worldPosition.y)
+                );
+            } else {
+                wanderPoints = [];
             }
         }
 
-        if (this.inputSystem && this.movementSystem) {
-
-            let isSlow = this.movementSystem.isMovingSlowly()
-            this.inputSystem.isMovingSlowly = isSlow
-
-            this.inputSystem.processFSM(deltaTime)
-            
-            let moveDir = this.inputSystem.getMoveDirection()
-
-            this.movementSystem.updateMovement(moveDir);
-
-            let targetAngle = this.inputSystem.getRotationAngle()
-            this.movementSystem.updateRotation(targetAngle)
+        if (this.inputSystem) {
+            this.inputSystem.initialize(targetNode, wanderPoints, enemyConfig.intent);
         }
 
-        if (this.inputSystem.stateDebugLabel) {
+        if (this.movementSystem) {
+            this.movementSystem.init(enemyConfig.intent.maxSpeed, enemyConfig.moving);
+        }
+    }
+
+    update(deltaTime: number) {
+        if (!this.configLoaded) return;
+
+        if (this.healthSystem && this.healthSystem.isDead) {
+            this.node.destroy();
+            return;
+        }
+
+        if (this.inputSystem && this.movementSystem) {
+            const isSlow = this.movementSystem.isMovingSlowly();
+            this.inputSystem.isMovingSlowly = isSlow;
+
+            this.inputSystem.processFSM(deltaTime);
+
+            const moveDir = this.inputSystem.getMoveDirection();
+            this.movementSystem.updateMovement(moveDir);
+
+            const targetAngle = this.inputSystem.getRotationAngle();
+            this.movementSystem.updateRotation(targetAngle);
+        }
+
+        if (this.inputSystem?.stateDebugLabel) {
             this.inputSystem.stateDebugLabel.node.angle = -this.node.angle;
         }
     }
 
     protected onDestroy() {
-        EventBus.emit(GameEvents.ENEMY_DIED, this)
+        EventBus.emit(GameEvents.ENEMY_DIED, this);
     }
 }

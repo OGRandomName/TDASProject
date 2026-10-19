@@ -4,6 +4,7 @@ import { TacticalSteeringBehavior } from './TacticalSteeringBehavior';
 import { AvoidBehavior } from './AvoidBehavior';
 import { Enemy } from './Enemy';
 import { EventBus, GameEvents } from './EventBus';
+
 const { ccclass, property } = _decorator;
 
 export interface NeighborData {
@@ -13,20 +14,20 @@ export interface NeighborData {
 
 @ccclass('EnemyMovementSystem')
 export class EnemyMovementSystem extends Component {
-    
-    @property({type : Graphics})
+
+    @property({ type: Graphics })
     public debugGraphics: Graphics | null = null;
 
-    private maxSpeed: number | null = null;
-    private maxTurnForce: number | null = null;
-    private tacticalSteering: TacticalSteeringBehavior
+    private maxSpeed = 0;
+    private maxTurnForce = 0;
+    private tacticalSteering: TacticalSteeringBehavior | null = null;
     private rigidBody: RigidBody2D | null = null;
-    private sharedActiveEnemies: Enemy[] = []
+    private sharedActiveEnemies: Enemy[] = [];
 
     protected onLoad(): void {
-        this.rigidBody = this.getComponent(RigidBody2D)
-        this.debugGraphics = this.getComponent(Graphics)
-        EventBus.on(GameEvents.WAVE_SPAWNED, this.receiveEnemyArray, this)
+        this.rigidBody = this.getComponent(RigidBody2D);
+        this.debugGraphics = this.getComponent(Graphics);
+        EventBus.on(GameEvents.WAVE_SPAWNED, this.receiveEnemyArray, this);
     }
 
     public init(maxSpeed: number, movementConfig: MovementConfig) {
@@ -36,98 +37,90 @@ export class EnemyMovementSystem extends Component {
             movementConfig,
             this,
             new AvoidBehavior(this, movementConfig.whiskers)
-        )
+        );
     }
+
     public updateRotation(angleDegrees: number | null) {
         if (angleDegrees !== null) {
             this.node.angle = angleDegrees;
-        }
-        else {
-            let currentVelocity = this.getVelocity();
+        } else {
+            const currentVelocity = this.getVelocity();
             if (currentVelocity.lengthSqr() > 0.01) {
                 this.node.angle = math.toDegree(Math.atan2(currentVelocity.y, currentVelocity.x));
             }
         }
-
-
     }
+
     public getVelocity(): Vec2 {
-        return this.rigidBody ? this.rigidBody.linearVelocity.clone() : new Vec2()
+        return this.rigidBody ? this.rigidBody.linearVelocity.clone() : new Vec2();
     }
-    
+
     public updateMovement(moveDir: Vec2) {
-        if (!this.rigidBody) return
+        if (!this.rigidBody || !this.tacticalSteering) return;
 
         let currentVelocity = this.getVelocity();
+        const currentPosition = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y);
 
-        let currentPosition = new Vec2(this.node.worldPosition.x, this.node.worldPosition.y)
-        
-        let tacticalAdjustments = this.tacticalSteering.getDesiredVelocity(currentPosition)
+        const tacticalAdjustments = this.tacticalSteering.getDesiredVelocity(currentPosition);
 
-        let combinedForces = new Vec2
-        Vec2.add(combinedForces, tacticalAdjustments, moveDir)
+        const combinedForces = new Vec2();
+        Vec2.add(combinedForces, tacticalAdjustments, moveDir);
         if (combinedForces.lengthSqr() > 1.0) {
-            combinedForces.normalize()
+            combinedForces.normalize();
         }
 
-        let desiredVelocity = new Vec2()
-        Vec2.multiplyScalar(desiredVelocity, combinedForces, this.maxSpeed)
+        const desiredVelocity = new Vec2();
+        Vec2.multiplyScalar(desiredVelocity, combinedForces, this.maxSpeed);
 
-        let steeringForce = new Vec2
-        Vec2.subtract(steeringForce, desiredVelocity, currentVelocity)
-        steeringForce = this.clampForce(steeringForce, this.maxTurnForce)
+        let steeringForce = new Vec2();
+        Vec2.subtract(steeringForce, desiredVelocity, currentVelocity);
+        steeringForce = this.clampForce(steeringForce, this.maxTurnForce);
 
-        currentVelocity.add(steeringForce)
+        currentVelocity.add(steeringForce);
+        currentVelocity = this.clampForce(currentVelocity, this.maxSpeed);
 
-        currentVelocity = this.clampForce(currentVelocity, this.maxSpeed)
-
-        this.rigidBody.linearVelocity = currentVelocity
+        this.rigidBody.linearVelocity = currentVelocity;
     }
 
-
     private clampForce(force: Vec2, maxForce: number): Vec2 {
-
-        if (force.lengthSqr() > (maxForce ** 2)) {
-            force.normalize().multiplyScalar(maxForce)
+        if (force.lengthSqr() > maxForce * maxForce) {
+            force.normalize().multiplyScalar(maxForce);
         }
-        return force
+        return force;
     }
 
     public isMovingSlowly(): boolean {
         if (!this.rigidBody) return true;
-        return this.rigidBody.linearVelocity.lengthSqr() < 10
-        
+        return this.rigidBody.linearVelocity.lengthSqr() < 10;
     }
 
     private receiveEnemyArray(masterArray: Enemy[]) {
-        this.sharedActiveEnemies = masterArray
+        this.sharedActiveEnemies = masterArray;
     }
 
     public getNeighborData(): NeighborData[] {
-        let neighbors: NeighborData[] = []
+        const neighbors: NeighborData[] = [];
 
-        if(!this.sharedActiveEnemies || this.sharedActiveEnemies.length === 0) return neighbors
-        
-        for (let otherEnemy of this.sharedActiveEnemies) {
-            if (!isValid(otherEnemy) || !otherEnemy.node || otherEnemy.node === this.node) continue
+        if (!this.sharedActiveEnemies || this.sharedActiveEnemies.length === 0) return neighbors;
 
-            let otherMovement = otherEnemy.getComponent(EnemyMovementSystem)
-            if (!otherMovement) continue
+        for (const otherEnemy of this.sharedActiveEnemies) {
+            if (!isValid(otherEnemy) || !otherEnemy.node || otherEnemy.node === this.node) continue;
 
+            const otherMovement = otherEnemy.getComponent(EnemyMovementSystem);
+            if (!otherMovement) continue;
 
-        neighbors.push({
-            position: new Vec2(
-                otherEnemy.node.worldPosition.x,
-                otherEnemy.node.worldPosition.y
-            ),
-            velocity: otherMovement.getVelocity()
-        })
+            neighbors.push({
+                position: new Vec2(
+                    otherEnemy.node.worldPosition.x,
+                    otherEnemy.node.worldPosition.y
+                ),
+                velocity: otherMovement.getVelocity()
+            });
+        }
+        return neighbors;
     }
-    return neighbors
-}
 
     protected onDestroy(): void {
-        EventBus.off(GameEvents.WAVE_SPAWNED, this.receiveEnemyArray, this)
+        EventBus.off(GameEvents.WAVE_SPAWNED, this.receiveEnemyArray, this);
     }
-
-}   
+}
