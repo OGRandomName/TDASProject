@@ -28,16 +28,21 @@
       {
         "index": 6,
         "name": "BORDERS"
+      },
+      {
+        "index": 7,
+        "name": "POWERUPS"
       }
     ],
     "collisionMatrix": {
       "0": 1,
-      "1": 116,
+      "1": 244,
       "2": 46,
       "3": 100,
       "4": 66,
       "5": 14,
-      "6": 26
+      "6": 26,
+      "7": 2
     }
   },
   "custom_joint_texture_layouts": []
