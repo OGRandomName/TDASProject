@@ -1,6 +1,7 @@
 import { _decorator, Camera, Component, EventKeyboard, EventMouse, Input, input, Node, Prefab } from 'cc';
 import { Player } from './Player';
 import { DOUBLE_GUN, FORWARD_REAR_PISTOL, PISTOL, SPREAD_GUN } from './WeaponConfig';
+import { EventBus, GameEvents } from './EventBus';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameCtrl')
@@ -18,7 +19,9 @@ export class GameCtrl extends Component {
     @property({ type: Node, tooltip: 'Drop the container for bullets' })
     public bulletContainer: Node | null = null;
     
-    
+    protected onLoad(): void {
+        EventBus.on(GameEvents.WEAPON_SWAP, this.handleWeaponSwap, this)
+    }
     
   start() {
     if (this.player && this.camera) {
@@ -31,9 +34,6 @@ export class GameCtrl extends Component {
     }
 
 
-    if (this.player) {
-        this.player.node.on('WeaponSelect', this.handleWeaponSwap, this)
-    }
 
     }
     protected onDestroy(): void {
